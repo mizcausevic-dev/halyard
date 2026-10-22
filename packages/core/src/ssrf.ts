@@ -22,7 +22,9 @@ export function isPublicAddress(ip: string): boolean {
 }
 
 export function isBlockedHostname(hostname: string): boolean {
-  return BLOCKED_HOSTS.has(hostname.toLowerCase().replace(/\.$/, "")) || hostname.toLowerCase().replace(/\.$/, "").endsWith(".localhost") || hostname.toLowerCase().replace(/\.$/, "").endsWith(".local") || hostname.toLowerCase().replace(/\.$/, "").endsWith(".internal");
+  const host = hostname.toLowerCase().replace(/\.$/, "");
+  if (BLOCKED_HOSTS.has(host)) return true;
+  return host.endsWith(".localhost") || host.endsWith(".local") || host.endsWith(".internal");
 }
 
 export function classifyDestination(raw: string, allowHosts: readonly string[] = []): Destination {
