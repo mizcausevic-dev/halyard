@@ -2,5 +2,35 @@
   "name": "halyard",
   "private": true,
   "version": "1.0.0",
-  "description": "Durable directed-workflow runner with a visual editor and a PostgreSQL worker."
+  "type": "module",
+  "description": "Durable directed-workflow runner with a visual editor and a PostgreSQL worker.",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "packages/core",
+    "apps/server",
+    "apps/web",
+    "apps/fixture"
+  ],
+  "scripts": {
+    "dev": "tsx scripts/dev.ts",
+    "migrate": "tsx apps/server/src/cli/migrate.ts",
+    "seed": "tsx apps/server/src/cli/seed.ts",
+    "rotate-credentials": "tsx apps/server/src/cli/rotate.ts",
+    "api": "tsx apps/server/src/main.ts",
+    "worker": "tsx apps/server/src/worker.ts",
+    "fixture": "tsx apps/fixture/src/main.ts",
+    "test": "npm run test -w @halyard/core && npm run test -w @halyard/server",
+    "test:e2e": "npm run test:e2e -w @halyard/web",
+    "typecheck": "npm run typecheck -w @halyard/core && npm run typecheck -w @halyard/server && npm run typecheck -w @halyard/web && npm run typecheck -w @halyard/fixture",
+    "build": "npm run build -w @halyard/server && npm run build -w @halyard/web",
+    "build:preview": "npm run build:preview -w @halyard/web",
+    "demo-snapshot": "tsx scripts/demo-snapshot.ts"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.10",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
 }

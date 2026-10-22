@@ -1,0 +1,20 @@
+{
+  "name": "@halyard/core",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "node --import tsx --test src/**/*.test.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "croner": "^9.1.0",
+    "ipaddr.js": "^2.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0"
+  }
+}

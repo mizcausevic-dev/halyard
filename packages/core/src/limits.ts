@@ -1,0 +1,36 @@
+export const LIMITS = {
+  schemaVersion: 1,
+  maxNodes: 80,
+  maxEdges: 160,
+  maxNameLength: 80,
+  maxDocumentBytes: 512 * 1024,
+  maxPayloadBytes: 256 * 1024,
+  maxStoredOutputBytes: 256 * 1024,
+  maxIterationItems: 50,
+  defaultIterationItems: 25,
+  maxRunTimeoutMs: 24 * 60 * 60 * 1000,
+  defaultRunTimeoutMs: 5 * 60 * 1000,
+  maxStepTimeoutMs: 120_000,
+  defaultStepTimeoutMs: 30_000,
+  maxDelayMs: 7 * 24 * 60 * 60 * 1000,
+  maxParallelism: 8,
+  defaultParallelism: 4,
+  maxExprDepth: 16,
+  maxExprNodes: 200,
+  maxExprSteps: 2_000,
+  maxStringLength: 10_000,
+  maxPathSegments: 20,
+  maxWebhookBytes: 256 * 1024,
+  maxRedirects: 3,
+  maxAttemptsCap: 5,
+  maxJobClaims: 8,
+  defaultBackoffMs: 200,
+  maxBackoffMs: 60_000,
+  schedulerGraceMs: 30_000,
+  defaultWebhookRate: 60,
+  maxWebhookRate: 600,
+} as const;
+
+export function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}

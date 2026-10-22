@@ -1,0 +1,19 @@
+{
+  "name": "@halyard/server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --import tsx --test --test-concurrency=1 src/**/*.test.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "esbuild src/main.ts src/worker.ts --bundle --platform=node --format=esm --outdir=dist --packages=external --outbase=src"
+  },
+  "dependencies": {
+    "@halyard/core": "*",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "@types/pg": "^8.15.5"
+  }
+}
