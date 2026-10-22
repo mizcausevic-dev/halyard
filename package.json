@@ -1,0 +1,6 @@
+{
+  "name": "halyard",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Durable directed-workflow runner with a visual editor and a PostgreSQL worker."
+}
