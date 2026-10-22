@@ -47,7 +47,7 @@ npm run build          # server bundle and the editor
 npm run build:preview  # static editor for GitHub Pages
 ```
 
-The `gh-pages` branch is the static preview. It is the output of `npm run build:preview` at the branch root, plus `.nojekyll`. In the repository settings, set Pages to deploy from the `gh-pages` branch and the `/` folder. That host cannot run Postgres or the worker. The preview signs in as Ada and runs the same semantic functions in the browser, with outbound HTTP stubbed. The banner in the editor says so.
+The `gh-pages` branch is the static preview at <https://mizcausevic-dev.github.io/halyard/>. It is the output of `npm run build:preview` at the branch root, plus `.nojekyll`. Pages publishes that branch from the `/` folder. That host cannot run Postgres or the worker. The preview signs in as Ada and runs the same semantic functions in the browser, with outbound HTTP stubbed. The banner in the editor says so.
 
 ## Scheduler requirements
 

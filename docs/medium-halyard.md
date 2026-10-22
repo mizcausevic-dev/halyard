@@ -8,7 +8,7 @@ That minute is the whole product brief for Halyard.
 
 Halyard is a durable workflow runner. You draw a directed graph, publish an immutable version, and a worker executes that version from PostgreSQL. A run stays pinned to the version it started on. The editor can keep changing. The in-flight run does not follow it.
 
-The public source is [github.com/mizcausevic-dev/halyard](https://github.com/mizcausevic-dev/halyard). The static preview is on the `gh-pages` branch. The preview can show the editor and replay the semantic runner in the browser. It does not start the worker, and it does not open outbound sockets. If a page tells you otherwise, it is the wrong page.
+The public source is [github.com/mizcausevic-dev/halyard](https://github.com/mizcausevic-dev/halyard). The live preview is [mizcausevic-dev.github.io/halyard](https://mizcausevic-dev.github.io/halyard/), published from the `gh-pages` branch. The preview can show the editor and replay the semantic runner in the browser. It does not start the worker, and it does not open outbound sockets. If a page tells you otherwise, it is the wrong page.
 
 ## What "durable" means here
 
@@ -96,7 +96,7 @@ The seed publishes three graphs against a local fixture server.
 
 ## What the GitHub Pages preview is
 
-GitHub Pages can host the editor. It cannot host PostgreSQL, and it cannot host the worker. The `gh-pages` branch is the static build. Sign-in on that build is the preview user. Run now uses the same in-browser semantic runner the unit tests use, with HTTP stubbed. The editor says so on the canvas.
+GitHub Pages can host the editor. It cannot host PostgreSQL, and it cannot host the worker. The live build is [mizcausevic-dev.github.io/halyard](https://mizcausevic-dev.github.io/halyard/). The `gh-pages` branch is that static build. Sign-in on that build is the preview user. Run now uses the same in-browser semantic runner the unit tests use, with HTTP stubbed. The editor says so on the canvas.
 
 The durable claims in this article are about the API and the worker. Those claims are backed by the acceptance tests: publish and run, inspect every step, kill the worker during a wait, reject a cycle, cancel a waiting run, show a duplicated charge, show an idempotency key that holds, and prove the export has no secret.
 
@@ -120,7 +120,7 @@ Deployment is three processes: the API, at least one worker, and Postgres. Sched
 
 ## What this will not become
 
-Halyard will not grow an "run any code" node inside the API process. It will not grow a checkbox that says exactly-once. It will not treat cancel as undo.
+Halyard will not grow a node that runs arbitrary code inside the API process. It will not grow a checkbox that says exactly-once. It will not treat cancel as undo.
 
 The limits are on purpose. Eighty nodes. A 256 KiB cap on stored payloads. A seven-day maximum delay. One level of iteration. Those numbers are the product, in the same way the queue semantics are the product. If a workflow needs more, it needs a different boundary, not a quieter failure.
 
