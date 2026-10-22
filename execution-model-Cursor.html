@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en" data-theme="cosmic" data-mode="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Halyard execution model</title>
+<style>
+  :root { --font: "IBM Plex Sans", "Segoe UI", sans-serif; --mono: ui-monospace, monospace; }
+  body { margin: 0; font-family: var(--font); background: var(--bg); color: var(--ink); }
+  header, main { max-width: 980px; margin: 0 auto; padding: 20px; }
+  h1 { font-size: 28px; margin: 8px 0; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  button, select { font: inherit; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  svg { width: 100%; height: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+  .node { fill: var(--panel); stroke: var(--line); }
+  .label { fill: var(--ink); font-size: 13px; font-family: var(--font); }
+  .edge { stroke: var(--muted); fill: none; marker-end: url(#arrow); }
+  .note { color: var(--muted); }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+  html[data-theme="bento"][data-mode="light"] { --bg:#f4f1ea; --panel:#fff; --ink:#1b1d18; --muted:#5c6158; --line:#ddd6c8; --accent:#0e6b52; }
+  html[data-theme="bento"][data-mode="dark"] { --bg:#141612; --panel:#22261e; --ink:#f4f1ea; --muted:#b7b9ae; --line:#3a4034; --accent:#9be0bf; }
+  html[data-theme="cosmic"][data-mode="light"] { --bg:#efeaff; --panel:#fff; --ink:#1a1230; --muted:#5c5370; --line:#d9d0f0; --accent:#5b3cc4; }
+  html[data-theme="cosmic"][data-mode="dark"] { --bg:#0d0b16; --panel:#1a1630; --ink:#f3efff; --muted:#b7aed4; --line:#3a335c; --accent:#c4b5ff; }
+  html[data-theme="swiss"][data-mode="light"] { --bg:#fff; --panel:#f6f6f6; --ink:#111; --muted:#555; --line:#111; --accent:#e10600; }
+  html[data-theme="swiss"][data-mode="dark"] { --bg:#111; --panel:#1c1c1c; --ink:#f5f5f5; --muted:#aaa; --line:#f5f5f5; --accent:#ff4d4d; }
+  html[data-theme="aqua"][data-mode="light"] { --bg:#e7f6ff; --panel:#fff; --ink:#073044; --muted:#3d6b80; --line:#b7d7ea; --accent:#0a7ea4; }
+  html[data-theme="aqua"][data-mode="dark"] { --bg:#06202c; --panel:#0d3344; --ink:#e7f6ff; --muted:#9ec5d6; --line:#1d5770; --accent:#7fd3f2; }
+  html[data-theme="brutal"][data-mode="light"] { --bg:#fff36a; --panel:#fff; --ink:#111; --muted:#333; --line:#111; --accent:#ff4fa3; }
+  html[data-theme="brutal"][data-mode="dark"] { --bg:#1a1a1a; --panel:#111; --ink:#fff36a; --muted:#ddd; --line:#fff36a; --accent:#ff4fa3; }
+  html[data-theme="steel"][data-mode="light"] { --bg:#e6e8ea; --panel:#f8f9fa; --ink:#1c2126; --muted:#54606a; --line:#c5ccd3; --accent:#3d4c5c; }
+  html[data-theme="steel"][data-mode="dark"] { --bg:#12171c; --panel:#1d252d; --ink:#e6e8ea; --muted:#a8b3bd; --line:#33404c; --accent:#9fb0c3; }
+  html[data-theme="parchment"][data-mode="light"] { --bg:#f3ead7; --panel:#fbf6ea; --ink:#3a2c1a; --muted:#6d5a42; --line:#e0d2b8; --accent:#7a4b2a; }
+  html[data-theme="parchment"][data-mode="dark"] { --bg:#241910; --panel:#342418; --ink:#f3ead7; --muted:#cbb89a; --line:#5a4632; --accent:#e0b080; }
+</style>
+</head>
+<body>
+<header>
+  <p class="note">Halyard run and step states. The product UI is light and dark. This diagram carries the seven-theme set.</p>
+  <h1>What the worker is allowed to do</h1>
+  <div class="row">
+    <label>Theme <select id="theme"></select></label>
+    <label>Mode <select id="mode"><option>dark</option><option>light</option></select></label>
+  </div>
+</header>
+<main>
+  <div class="grid">
+    <section>
+      <h2>Run</h2>
+      <svg viewBox="0 0 420 460" role="img" aria-label="Run states from queued through a terminal state">
+        <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6" fill="context-stroke" /></marker></defs>
+        <g class="edge" stroke-width="1.5">
+          <path d="M210 70 V110" /><path d="M210 160 V200" /><path d="M210 250 H330 V300" />
+          <path d="M210 250 V300" /><path d="M90 320 V370" /><path d="M210 350 V390" /><path d="M330 350 V390" />
+        </g>
+        <g id="boxes"></g>
+      </svg>
+    </section>
+    <section>
+      <h2>Step</h2>
+      <svg viewBox="0 0 420 460" role="img" aria-label="Step states including skipped and waiting">
+        <g class="edge" stroke-width="1.5">
+          <path d="M210 70 V110" /><path d="M210 160 V200" /><path d="M120 230 H70 V300" />
+          <path d="M300 230 H350 V300" /><path d="M210 250 V300" /><path d="M210 350 V400" />
+        </g>
+        <g id="step-boxes"></g>
+      </svg>
+      <p class="note">A condition selects one port. The other branch is skipped and does not run. A delay leaves the step waiting and writes a resume job. The worker does not sleep inside the web request.</p>
+      <p class="note">If the worker dies after a non-retryable step has started and before the result is committed, recovery marks <span class="mono">uncertain_outcome</span> and does not call the destination again. The external action may already have happened. Cancel does not reverse it.</p>
+    </section>
+  </div>
+</main>
+<script>
+const themes = ["bento","cosmic","swiss","aqua","brutal","steel","parchment"];
+const root = document.documentElement;
+const theme = document.querySelector("#theme");
+const mode = document.querySelector("#mode");
+for (const name of themes) {
+  const option = document.createElement("option");
+  option.textContent = name;
+  theme.append(option);
+}
+theme.value = localStorage.getItem("halyard-exec-theme") || "cosmic";
+mode.value = localStorage.getItem("halyard-exec-mode") || "dark";
+function apply() {
+  root.dataset.theme = theme.value;
+  root.dataset.mode = mode.value;
+  localStorage.setItem("halyard-exec-theme", theme.value);
+  localStorage.setItem("halyard-exec-mode", mode.value);
+}
+theme.onchange = mode.onchange = apply;
+apply();
+function boxes(target, items) {
+  const host = document.querySelector(target);
+  for (const item of items) {
+    const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    rect.setAttribute("class", "node");
+    rect.setAttribute("x", item.x);
+    rect.setAttribute("y", item.y);
+    rect.setAttribute("width", "120");
+    rect.setAttribute("height", "40");
+    rect.setAttribute("rx", "6");
+    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    text.setAttribute("class", "label");
+    text.setAttribute("x", item.x + 60);
+    text.setAttribute("y", item.y + 25);
+    text.setAttribute("text-anchor", "middle");
+    text.textContent = item.label;
+    group.append(rect, text);
+    host.append(group);
+  }
+}
+boxes("#boxes", [
+  { x: 150, y: 30, label: "queued" },
+  { x: 150, y: 120, label: "running" },
+  { x: 150, y: 210, label: "waiting" },
+  { x: 40, y: 320, label: "canceled" },
+  { x: 150, y: 400, label: "succeeded" },
+  { x: 270, y: 400, label: "failed" }
+]);
+boxes("#step-boxes", [
+  { x: 150, y: 30, label: "queued" },
+  { x: 150, y: 120, label: "running" },
+  { x: 20, y: 300, label: "skipped" },
+  { x: 150, y: 300, label: "waiting" },
+  { x: 280, y: 300, label: "failed" },
+  { x: 150, y: 400, label: "succeeded" }
+]);
+</script>
+</body>
+</html>
